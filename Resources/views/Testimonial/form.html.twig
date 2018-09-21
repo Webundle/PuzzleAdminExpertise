@@ -1,0 +1,54 @@
+{% trans_default_domain 'admin' %}
+
+{{ form_start(form, { 'attr' : {'class' : 'form-stacked'}, 'multipart' : true } ) }}
+<div class="panel panel-flat">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-4">
+                <label>{{ "expertise.testimonial.picture"|trans }}</label>
+                {% if testimonial is defined and testimonial.picture is not empty %}
+                    {% include 'PuzzleAdminMediaBundle:File:embbed.html.twig' with { 'type' : 'image', 'previews' : render_api_media_file(testimonial.picture) } %}
+                {% else %}
+                    {% include 'PuzzleAdminMediaBundle:File:embbed.html.twig' with { 'type' : 'image' } %}
+                {% endif %}
+            </div>
+            <div class="col-sm-8">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        {{ form_label(form.author) }}
+                        {{ form_widget(form.author) }}
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        {{ form_label(form.company) }}
+                        {{ form_widget(form.company) }}
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        {{ form_label(form.position) }}
+                        {{ form_widget(form.position) }}
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        {{ form_label(form.message) }}
+                        {{ form_widget(form.message) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-center">
+    <a class="btn btn-default" href="{{ url('admin_expertise_testimonial_list') }}">
+        <i class="icon-arrow-left8"></i>
+        {{ 'button.back'|trans }}
+    </a>
+    <button class="btn btn-success">
+        {{ testimonial is defined ? 'button.update'|trans : 'button.add'|trans }}
+        <i class="icon-checkmark2"></i>
+    </button>
+</div>
+{{ form_end(form) }}

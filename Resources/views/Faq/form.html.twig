@@ -1,0 +1,31 @@
+{% trans_default_domain 'admin' %}
+
+{{ form_start(form, {'attr': {'class': 'form-stacked'}, 'multipart' : true}) }}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-flat">
+            <div class="panel-body">
+                <div class="form-group">
+                    {{ form_label(form.question) }}
+                    {{ form_widget(form.question) }}
+                </div>
+                <div class="form-group">
+                    {{ form_widget(form.answer) }}
+                </div>
+            </div>
+            <div class="panel-footer">
+            	<div class="text-center">
+                    <a class="btn btn-default" href="{{ url('admin_expertise_faq_list') }}">
+                        <i class="icon-arrow-left8"></i>
+                        {{ 'button.back'|trans }}
+                    </a>
+                    <button class="btn btn-success">
+                        {{ faq is defined ? 'button.update'|trans : 'button.add'|trans }}
+                        <i class="icon-checkmark2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}

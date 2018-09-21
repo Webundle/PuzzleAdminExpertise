@@ -1,0 +1,70 @@
+{% trans_default_domain 'admin' %}
+
+{{ form_start(form, {'attr': {'class': 'form-stacked'}, 'multipart' : true}) }}
+<div class="row">
+    <div class="col-sm-8">
+        <div class="panel panel-flat">
+            <div class="panel-body">
+                <div class="form-group">
+                    {{ form_label(form.title) }}
+                    {{ form_widget(form.title) }}
+                </div>
+                <div class="form-group">
+                    {{ form_widget(form.description) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-flat">
+            <div class="panel-body">
+                <div class="form-group">
+                    {{ form_label(form.client) }}
+                    {{ form_widget(form.client) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.location) }}
+                    {{ form_widget(form.location) }}
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-flat">
+            <div class="panel-body">
+                <div class="form-group">
+                    {{ form_label(form.startedAt) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                        {{ form_widget(form.startedAt) }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.endedAt) }}
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="icon-calendar"></i></span>
+                        {{ form_widget(form.endedAt) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-flat">
+            <div class="panel-body">
+                <div class="form-group">
+                    {{ form_label(form.gallery) }}
+                    {{ form_widget(form.gallery) }}
+                </div>
+                <div><a href="{{ url('admin_media_folder_list') }}" target="_blank">{{ "media.base"|trans }}</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-center">
+    <a class="btn btn-default" href="{{ url('admin_expertise_project_list') }}">
+        <i class="icon-arrow-left8"></i>
+        {{ 'button.back'|trans }}
+    </a>
+    <button class="btn btn-success">
+        {{ project is defined ? 'button.update'|trans : 'button.add'|trans }}
+        <i class="icon-checkmark2"></i>
+    </button>
+</div>
+{{ form_end(form) }}

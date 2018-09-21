@@ -1,0 +1,86 @@
+{% trans_default_domain 'admin' %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_table.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.staff.list"|trans }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.staff.base"|trans }} {% endblock %}
+
+{% block headingelements %}
+<a href="{{ url('admin_expertise_staff_create') }}" class="btn btn-primary btn-labeled">
+    <b><i class="icon-add"></i></b>
+    {{ "expertise.staff.create"|trans }}
+</a>
+{% endblock %}
+
+{% block breadcrumb %}
+	<li class="active">{{ "expertise.staff.list"|trans|capitalize }}</li>
+{% endblock %}
+
+{% block breadcrumbelements %}
+    {% if staffs is not empty %}
+        <ul class="breadcrumb-elements">
+            <li>
+                <a href="#" class="text-danger delete-list toggle-action hide">
+                    <i class="icon-trash-alt"></i> {{ "button.delete_list"|trans }}
+                </a>
+                <input type="hidden" value="admin_expertise_staff_delete" id="delete-route-name"/>
+            </li>
+        </ul>
+{% endif %}
+{% endblock %}
+
+{% block mainpage %}
+<div class="col-lg-12">
+    <div class="panel panel-flat">
+        <div class="panel-body">
+            <table class="table datatable">
+                <thead>
+                    <tr>
+                        <th>
+                            {% if staffs is not empty %}
+                                <a href="#" id="toggle-check">
+                                    <i class="icon-checkbox-unchecked toggle-icon"  id="toggle-check-icon"></i>
+                                </a>
+                                <input type="hidden" value="{{ staffs|length|default('0') }}" id="toggle-items-count">
+                                <input type="hidden" value="0" id="toggle-items-checked-count">
+                            {% endif %}
+                        </th>
+                        <th>{{ "expertise.staff.fullName"|trans }}</th>
+                        <th>{{ "expertise.staff.service"|trans }}</th>
+                        <th>{{ "expertise.staff.position"|trans }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in staffs %}
+                    <tr class="toggleable" id="item-{{ staff.id }}">
+                        <td>
+                            <a class="text-muted text-small text-left toggleable-btn-select" href="#">
+                                <i class="icon-checkbox-unchecked toggle-icon toggle-item" id="toggle-item-{{ staff.id }}"></i>
+                            </a>
+                        </td>
+                        <td>{{ staff.fullName }}</td>
+                        <td>{{ staff._embedded['service']['title'] }}</td>
+                        <td>{{ staff.position }}</td>
+                        <td class="text-right">
+                            <div class="btn-control">
+                                <span class="icons-list toggleable-btn hide toggleable-btn-controls">
+                                    <a href="{{ url('admin_expertise_staff_update', { 'id': staff.id }) }}" class="mr-10">
+                                        <i class="icon-pencil"></i> 
+                                    </a>
+                                    <a href="{{ url('admin_expertise_staff_delete', {'id': staff.id}) }}" data-toggle="modal" title="{{ "button.delete"|trans }}" class="delete-item" id="delete-item-{{ staff.id }}">
+                                        <i class="icon-trash-alt text-danger"></i>
+                                    </a>
+                                    <input type="hidden" id="label-delete-item-{{ staff.id }}" value="{{ staff.fullName }}">
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

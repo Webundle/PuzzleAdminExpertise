@@ -1,0 +1,60 @@
+{% trans_default_domain 'admin' %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_table.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.faq.list"|trans }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.faq.base"|trans }} {% endblock %}
+
+{% block headingelements %}
+<a href="{{ url('admin_expertise_faq_create') }}" class="btn btn-primary btn-labeled">
+    <b><i class="icon-add"></i></b>
+    {{ "expertise.faq.create"|trans }}
+</a>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li class="active">{{ "expertise.faq.list"|trans|capitalize }}</li>
+{% endblock %}
+
+{% block mainpage %}
+<div class="col-lg-12">
+    <div class="panel-group panel-group-control panel-group-control-right">
+    	{% for key, faq in faqs %}
+        	<div class="panel panel-white">
+        		<div class="panel-heading">
+        			<h6 class="panel-title">
+        				<a class="collapsed" data-toggle="collapse" href="#question{{ key }}" aria-expanded="false">
+        					<i class="icon-help position-left text-slate"></i> {{ faq.question }}
+        				</a>
+        			</h6>
+        		</div>
+        
+        		<div id="question{{ key }}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+        			<div class="panel-body">
+        				{{ faq.answer|raw }}
+        			</div>
+        			<div class="panel-footer panel-footer-transparent"><a class="heading-elements-toggle"><i class="icon-more"></i></a>
+    					<div class="heading-elements">
+    						<ul class="list-inline list-inline-condensed heading-text pull-right">
+    							<li>
+    								<a href="{{ url('admin_expertise_faq_update', { 'id': faq.id }) }}" title="{{ "button.update"|trans }}" class="mr-10">
+                                        <i class="icon-pencil"></i> 
+                                    </a>
+    							</li>
+    							<li>
+    								<a href="{{ url('admin_expertise_faq_delete', {'id': faq.id}) }}" data-toggle="modal" title="{{ "button.delete"|trans }}" class="delete-item" id="delete-item-{{ faq.id }}">
+                                        <i class="icon-trash-alt text-danger"></i>
+                                    </a>
+                                    <input type="hidden" id="label-delete-item-{{ faq.id }}" value="{{ faq.question }}">
+    							</li>
+    						</ul>
+    					</div>
+    				</div>
+        		</div>
+        	</div>
+    	{% endfor %}
+    </div>
+</div>
+{% endblock %}

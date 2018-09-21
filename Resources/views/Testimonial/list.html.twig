@@ -1,0 +1,87 @@
+{% trans_default_domain 'admin' %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_table.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.testimonial.list"|trans }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.testimonial.base"|trans }} {% endblock %}
+
+{% block headingelements %}
+<a href="{{ url('admin_expertise_testimonial_create') }}" class="btn btn-primary btn-labeled">
+    <b><i class="icon-add"></i></b>
+    {{ "expertise.testimonial.create"|trans }}
+</a>
+{% endblock %}
+
+{% block breadcrumb %}
+{{ parent() }}
+<li class="active">{{ "expertise.testimonial.list"|trans|capitalize }}</li>
+{% endblock %}
+
+{% block breadcrumbelements %}
+    {% if testimonials is not empty %}
+        <ul class="breadcrumb-elements">
+            <li>
+                <a href="#" class="text-danger delete-list toggle-action hide">
+                    <i class="icon-trash-alt"></i> {{ "button.delete_list"|trans }}
+                </a>
+                <input type="hidden" value="admin_expertise_testimonial_delete" id="delete-route-name"/>
+            </li>
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block mainpage %}
+<div class="col-lg-12">
+    <div class="panel panel-flat">
+        <div class="panel-body">
+            <table class="table datatable">
+                <thead>
+                    <tr>
+                        <th>
+                            {% if testimonials is not empty %}
+                                <a href="#" id="toggle-check">
+                                    <i class="icon-checkbox-unchecked toggle-icon"  id="toggle-check-icon"></i>
+                                </a>
+                                <input type="hidden" value="{{ testimonials|length|default('0') }}" id="toggle-items-count">
+                                <input type="hidden" value="0" id="toggle-items-checked-count">
+                            {% endif %}
+                        </th>
+                        <th>{{ "expertise.testimonial.author"|trans }}</th>
+                        <th>{{ "expertise.testimonial.company"|trans }}</th>
+                        <th>{{ "expertise.testimonial.position"|trans }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for testimonial in testimonials %}
+                    <tr class="toggleable" id="item-{{ testimonial.id }}">
+                        <td>
+                            <a class="text-muted text-small text-left toggleable-btn-select" href="#">
+                                <i class="icon-checkbox-unchecked toggle-icon toggle-item" id="toggle-item-{{ testimonial.id }}"></i>
+                            </a>
+                        </td>
+                        <td>{{ testimonial.author }}</td>
+                        <td>{{ testimonial.company }}</td>
+                        <td>{{ testimonial.position }}</td>
+                        <td class="text-right">
+                            <div class="btn-control">
+                                <span class="icons-list toggleable-btn hide toggleable-btn-controls">
+                                    <a href="{{ url('admin_expertise_testimonial_update', { 'id': testimonial.id }) }}" title="{{ "button.update"|trans }}" class="mr-10">
+                                        <i class="icon-pencil"></i> 
+                                    </a>
+                                    <a href="{{ url('admin_expertise_testimonial_delete', {'id': testimonial.id}) }}" data-toggle="modal" title="{{ "button.delete"|trans }}" class="delete-item" id="delete-item-{{ testimonial.id }}">
+                                        <i class="icon-trash-alt text-danger"></i>
+                                    </a>
+                                    <input type="hidden" id="label-delete-item-{{ testimonial.id }}" value="{{ testimonial.author }}">
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

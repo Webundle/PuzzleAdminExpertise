@@ -1,0 +1,20 @@
+# Testimonial
+admin_expertise_testimonial_list:
+    path:     /list
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Testimonial:list' }
+
+admin_expertise_testimonial_create:
+    path:     /create
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Testimonial:create' }
+
+admin_expertise_testimonial_show:
+    path:     /{id}
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Testimonial:show' }
+
+admin_expertise_testimonial_update:
+    path:     /{id}/update
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Testimonial:update' }
+    
+admin_expertise_testimonial_delete:
+    path:     /{id}/delete
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Testimonial:delete' }

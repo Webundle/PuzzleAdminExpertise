@@ -1,0 +1,28 @@
+{% trans_default_domain 'admin' %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_editor.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.testimonial.create"|trans }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.testimonial.base"|trans }}{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li><a href="{{ url('admin_expertise_testimonial_list') }}">{{ "expertise.testimonial.list"|trans }}</a></li>
+    <li class="active">{{ "expertise.testimonial.create"|trans }}</li>
+{% endblock %}
+
+{% block mainpage %}
+    {% include 'PuzzleAdminExpertiseBundle:Testimonial:form.html.twig' with { ' form' : form } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts 
+        'bundles/puzzleadmin/js/pages/uploader.js'
+        
+        output = 'compiled/js/admin_expertise_testimonial_editor.min.js'
+    %}
+    	<script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

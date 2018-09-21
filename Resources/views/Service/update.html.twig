@@ -1,0 +1,28 @@
+{% trans_default_domain 'admin' %}
+
+{% set subactive = "admin_expertise_service_list" %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_editor.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.action.service.update"|trans }} {{ service.title }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.navigation.service"|trans }} {% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumb-line">
+        <ul class="breadcrumb">
+            <li><a href="{{ url('admin_expertise_service_list') }}">{{ "expertise.action.service.list"|trans }}</a></li>
+            <li class="active">{{ "expertise.action.service.update"|trans }}</li>
+        </ul>
+</div>
+{% endblock %}
+
+{% block mainpage %}
+    {% include 'PuzzleAdminExpertiseBundle:Service:form.html.twig' with { ' form' : form } %}
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="{{ asset('bundles/puzzleadmin/js/pages/uploader.js') }}" type="text/javascript"></script>
+{% endblock %}
+

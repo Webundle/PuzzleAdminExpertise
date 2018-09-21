@@ -1,0 +1,23 @@
+{% trans_default_domain 'admin' %}
+
+{% set subactive = "admin_expertise_faq_list" %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_editor.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.faq.update"|trans }} {{ faq.question }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.faq.base"|trans }} {% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li><a href="{{ url('admin_expertise_faq_list') }}">{{ "expertise.faq.list"|trans }}</a></li>
+    <li class="active">{{ "expertise.faq.update"|trans }}</li>
+{% endblock %}
+
+{% block mainpage %}
+    <div class="col-md-10 col-md-offset-1">
+        {% include 'PuzzleAdminExpertiseBundle:Faq:form.html.twig' with { ' form' : form, 'faq': faq } %}
+    </div>
+{% endblock %}
+
+

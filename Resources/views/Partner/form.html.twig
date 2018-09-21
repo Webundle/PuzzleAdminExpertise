@@ -1,0 +1,28 @@
+{% trans_default_domain 'admin' %}
+
+{{ form_start(form, { 'attr' : {'class' : 'form-stacked'}, 'multipart' : true }) }}
+<div class="modal-body">
+    <div class="form-group">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.location) }}
+        {{ form_widget(form.location) }}
+    </div>
+    <div class="form-group">
+        {% if partner is defined and partner.picture is not empty %}
+            {% include 'PuzzleAdminMediaBundle:File:embbed.html.twig' with { 'type' : 'image', 'previews' : render_api_media_file(partner.picture) } %}
+        {% else %}
+            {% include 'PuzzleAdminMediaBundle:File:embbed.html.twig' with { 'type' : 'image' } %}
+        {% endif %}
+    </div>
+</div>
+<div class="modal-footer text-right">
+    <button class="btn btn-link" data-dismiss="modal"><i class="icon-cross"></i> {{ "button.close"|trans }}</button>
+    <button class="btn btn-success">
+        {{ partner is defined ? 'button.update'|trans : 'button.add'|trans }}
+        <i class="icon-checkmark2"></i>
+    </button>
+</div>
+{{ form_end(form) }}

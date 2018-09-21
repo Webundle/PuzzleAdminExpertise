@@ -1,0 +1,23 @@
+service:
+    resource: '@PuzzleAdminExpertiseBundle/Resources/config/routing/service.yml'
+    prefix: '/services'
+
+project:
+    resource: '@PuzzleAdminExpertiseBundle/Resources/config/routing/project.yml'
+    prefix: '/projects'
+
+staff:
+    resource: '@PuzzleAdminExpertiseBundle/Resources/config/routing/staff.yml'
+    prefix: '/staffs'
+
+partner:
+    resource: '@PuzzleAdminExpertiseBundle/Resources/config/routing/partner.yml'
+    prefix: '/partners'
+    
+testimonial:
+    resource: '@PuzzleAdminExpertiseBundle/Resources/config/routing/testimonial.yml'
+    prefix: '/testimonials'
+
+faq:
+    resource: '@PuzzleAdminExpertiseBundle/Resources/config/routing/faq.yml'
+    prefix: '/faqs'

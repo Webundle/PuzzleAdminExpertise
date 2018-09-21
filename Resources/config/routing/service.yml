@@ -1,0 +1,20 @@
+# Service
+admin_expertise_service_list:
+    path:     /list
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Service:list' }
+
+admin_expertise_service_create:
+    path:     /create
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Service:create' }
+
+admin_expertise_service_show:
+    path:     /{id}
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Service:show' }
+
+admin_expertise_service_update:
+    path:     /{id}/update
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Service:update' }
+    
+admin_expertise_service_delete:
+    path:     /{id}/delete
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Service:delete' }

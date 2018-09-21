@@ -1,0 +1,19 @@
+{% trans_default_domain 'admin' %}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header bg-info"><h3>{{ "expertise.partner.update"|trans }}</h3></div>
+        {% include 'PuzzleAdminExpertiseBundle:Partner:form.html.twig' with { ' form' : form, 'partner' : partner } %}
+    </div>
+</div>
+{% javascripts 
+    'bundles/puzzleadmin/js/plugins/uploaders/fileinput/plugins/purify.min.js'
+    'bundles/puzzleadmin/js/plugins/uploaders/fileinput/plugins/sortable.min.js'
+    'bundles/puzzleadmin/js/plugins/uploaders/fileinput/fileinput.min.js'
+    'bundles/puzzleadmin/js/pages/uploader.js'
+
+    output="compiled/js/admin_expertise_partner_editor.min.js"
+%}
+	<script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+  

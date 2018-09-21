@@ -1,0 +1,20 @@
+# Partner
+admin_expertise_partner_list:
+    path:     /list
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Partner:list' }
+
+admin_expertise_partner_create:
+    path:     /create
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Partner:create' }
+
+admin_expertise_partner_show:
+    path:     /{id}
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Partner:show' }
+
+admin_expertise_partner_update:
+    path:     /{id}/update
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Partner:update' }
+    
+admin_expertise_partner_delete:
+    path:     /{id}/delete
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Partner:delete' }

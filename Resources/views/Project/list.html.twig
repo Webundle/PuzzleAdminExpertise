@@ -1,0 +1,98 @@
+{% trans_default_domain 'admin' %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_table.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.project.list"|trans }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.project.base"|trans }} {% endblock %}
+
+{% block headingelements %}
+<a href="{{ url('admin_expertise_project_create') }}" class="btn btn-primary btn-labeled">
+    <b><i class="icon-add"></i></b>
+    {{ "expertise.project.create"|trans }}
+</a>
+{% endblock %}
+
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li class="active">{{ "expertise.project.list"|trans|capitalize }}</li>
+{% endblock %}
+
+{% block breadcrumbs %}
+    {% if projects is not empty %}
+        <ul class="breadcrumb-elements">
+            <li>
+                <a href="#" class="text-danger delete-list toggle-action hide">
+                    <i class="icon-trash-alt"></i> {{ "button.delete_list"|trans }}
+                </a>
+                <input type="hidden" value="admin_expertise_project_delete" id="delete-route-name"/>
+            </li>
+        </ul>
+    {% endif %}
+{% endblock %}
+
+
+{% block mainpage %}
+<div class="col-lg-12">
+    <div class="panel panel-flat">
+        <div class="panel-body">
+            <table class="table datatable">
+                <thead>
+                    <tr>
+                        <th>
+                            {% if projects is not empty %}
+                                <a href="#" id="toggle-check">
+                                    <i class="icon-checkbox-unchecked toggle-icon"  id="toggle-check-icon"></i>
+                                </a>
+                                <input type="hidden" value="{{ projects|length|default('0') }}" id="toggle-items-count">
+                                <input type="hidden" value="0" id="toggle-items-checked-count">
+                            {% endif %}
+                        </th>
+                        <th>{{ "expertise.project.title"|trans }}</th>
+                        <th>{{ "expertise.project.service"|trans }}</th>
+                        <th>{{ "expertise.project.client"|trans }}</th>
+                        <th>{{ "expertise.project.startedAt"|trans }}</th>
+                        <th>{{ "expertise.project.endedAt"|trans }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr class="toggleable" id="item-{{ project.id }}">
+                        <td>
+                            <a class="text-muted text-small text-left toggleable-btn-select" href="#">
+                                <i class="icon-checkbox-unchecked toggle-icon toggle-item" id="toggle-item-{{ project.id }}"></i>
+                            </a>
+                        </td>
+                        <td>
+                        	<a href="{{ url('admin_expertise_project_update', { 'id': project.id }) }}">
+                                {{ project.title }}
+                            </a>
+                         </td>
+                        <td>{{ project._embedded['service']['title'] }}</td>
+                        <td>{{ project.client }}</td>
+                        <td>{{ project.startedAt }}</td>
+                        <td>{{ project.endedAt }}</td>
+                        <td class="text-right">
+                            <div class="btn-control">
+                                <span class="icons-list toggleable-btn hide toggleable-btn-controls">
+                                    <a href="{{ url('admin_expertise_project_update', { 'id': project.id }) }}" class="mr-10">
+                                        <i class="icon-pencil"></i>
+                                    </a>
+                                    <a href="{{ url('admin_expertise_project_delete', { 'id': project.id }) }}" data-toggle="modal" title="{{ "button.delete"|trans }}" class="delete-item" id="delete-item-{{ project.id }}">
+                                        <i class="icon-trash-alt text-danger"></i>
+                                    </a>
+                                    <input type="hidden" id="label-delete-item-{{ project.id }}" value="{{ project.title }}">
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

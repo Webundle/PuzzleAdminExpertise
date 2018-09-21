@@ -1,0 +1,28 @@
+{% trans_default_domain 'admin' %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_editor.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.staff.update"|trans }} {{ staff.fullName }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.staff.list"|trans }}{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li><a href="{{ url('admin_expertise_staff_list') }}">{{ "expertise.staff.list"|trans }}</a></li>
+    <li class="active">{{ "expertise.staff.update"|trans }}</li>
+{% endblock %}
+
+{% block mainpage %}
+    {% include 'PuzzleAdminExpertiseBundle:Staff:form.html.twig' with { ' form' : form, 'staff' : staff } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts 
+        'bundles/puzzleadmin/js/pages/uploader.js'
+        
+        output = 'compiled/js/admin_expertise_staff_editor.min.js'
+    %}
+    	<script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

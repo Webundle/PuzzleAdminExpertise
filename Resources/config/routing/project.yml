@@ -1,0 +1,20 @@
+# Project
+admin_expertise_project_list:
+    path:     /list
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Project:list' }
+
+admin_expertise_project_create:
+    path:     /create
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Project:create' }
+
+admin_expertise_project_show:
+    path:     /{id}
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Project:show' }
+
+admin_expertise_project_update:
+    path:     /{id}/update
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Project:update' }
+    
+admin_expertise_project_delete:
+    path:     /{id}/delete
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Project:delete' }

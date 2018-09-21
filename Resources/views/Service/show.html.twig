@@ -1,0 +1,143 @@
+{% trans_default_domain 'admin' %}
+
+{% set active = "admin" %}
+
+{% set subactive = "admin_expertise_service_list" %}
+
+{% extends 'PuzzleAdminBlogBundle::layout_editor.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.action.service.show"|trans }} {{ service.name }} {% endblock %}
+
+{% block mainsubtitle %}{{ "expertise.action.service.show"|trans }} {{ service.name }} {% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumb-line">
+        <ul class="breadcrumb">
+            <li><a href="{{ url('admin_expertise_service_list') }}">{{ "expertise.action.service.list"|trans }}</a></li>
+            {% if parent is not empty %}
+                <li><a href="{{ url('admin_expertise_service_show', { 'id' : parent.id }) }}">{{ parent.title }}</a></li>
+            {% endif %}
+            <li class="active">{{ service.title }}</li>
+        </ul>
+        <ul class="breadcrumb-elements">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="icon-plus position-left"></i>
+                    Actions
+                    <span class="caret"></span>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li>
+                        <a href="{{ url('admin_expertise_service_update', { 'id': service.id }) }}" title="{{ "button.update"|trans }}" alt="{{ "button.update"|trans }}">
+                            <i class="icon-pencil"></i>
+                            {{ "button.update"|trans }}
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#remove_item_modal" data-toggle="modal" title="{{ "button.remove"|trans }}" class="remove-item" id="remove-item-{{ service.id }}">
+                            <i class="icon-trash-alt text-danger"></i>
+                            {{ "button.remove"|trans }}
+                        </a>
+                        <input type="hidden" id="url-remove-item-{{ service.id }}" value="{{ url('admin_expertise_service_delete', {'id': service.id}) }}">
+                        <input type="hidden" id="label-remove-item-{{ service.id }}" value="{{ service.name }}">
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block mainpage %}
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="panel panel-flat">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="form-label">{{ "expertise.property.service.name"|trans }}</label>
+                        <input class="form-control" value="{{ service.name }}" disabled/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">{{ "expertise.property.service.slug"|trans }}</label>
+                        <input class="form-control" value="{{ service.slug }}" disabled/>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-flat">
+                <div class="panel-body">
+                    <div class="action-group-lg">
+                        {% if service.picture is defined %}
+                        <div class="action-group text-center">
+                            <a href="#" class="display-inline-block">
+                                <img src="{{ service.picture }}" class="img-responsive" alt="">
+                            </a>
+                        </div>
+                        {% endif %}
+                        <h3 class="text-semibold mb-5">
+                            <a href="#" class="text-default">{{ service.name|capitalize }}</a>
+                        </h3>
+
+                        <ul class="list-inline list-inline-separate text-muted action-group">
+                            <li><i class="icon-user"></i> <a href="#" class="text-muted">{{ service.author|capitalize }}</a></li>
+                            <li>{{ service.createdAt|date('d-m-Y H:i') }}</li>
+                            {% if service.enable_comments == 1 %}
+                                <li><a href="#" class="text-muted">{{ service._embebbed['comments']|length|default('0') }} <i class="icon-user"></i></a></li>
+                            {% endif %}
+                            <li>
+                                <a href="{{ url('admin_expertise_category_show', { 'id' : category.id }) }}">{{ category.name }}</a>
+                            </li>
+                        </ul>
+
+                        <div class="action-group">
+                            {{ service.description|raw }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="panel panel-flat">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="form-label">{{ "expertise.property.service.category"|trans }}</label><br/>
+                        <a href="{{ url('admin_expertise_category_show', { 'id' : category.id }) }}">{{ category.name }}</a>
+                    </div>
+                    {% if  service.tags is defined %}
+                    <div class="form-group">
+                        <label class="form-label">{{ "expertise.property.service.tags"|trans }}</label>
+                        {% for tag in service.tags %}
+                            <span class="badge">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <div class="checkbox checkbox-switchery switchery-sm">
+                            <label for="enabled">{{ "expertise.property.service.enable_comments"|trans }}</label>
+                            <input type="checkbox" class="switchery" id="enabled" {% if service.enable_comments == 1 %}checked="checked"{% endif %} disabled />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox checkbox-switchery switchery-sm">
+                            <label for="locked">{{ "expertise.property.service.visible"|trans }}</label>
+                            <input type="checkbox" class="switchery" id="locked" {% if service.visible == 1 %}checked="checked"{% endif %} disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if service.picture is defined %}
+            <div class="panel panel-flat">
+                <div class="panel-body">
+                    <fieldset>
+                        <legend class="text-semibold">{{ "expertise.property.service.picture"|trans }}</legend>
+                        <div class="form-group">
+                            <img src="{{ service.picture }}" width="100%"/>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

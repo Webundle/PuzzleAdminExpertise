@@ -1,0 +1,35 @@
+{% trans_default_domain 'admin' %}
+
+{% extends 'PuzzleAdminExpertiseBundle::layout_editor.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ "expertise.project.update"|trans }} {{ project.title }} {% endblock %}
+
+{% block mainsubtitle %} - {{ "expertise.project.base"|trans }} {% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li><a href="{{ url('admin_expertise_project_list') }}">{{ "expertise.project.list"|trans }}</a></li>
+    <li class="active">{{ "expertise.project.update"|trans }}</li>
+{% endblock %}
+
+{% block mainpage %}
+    {% include 'PuzzleAdminExpertiseBundle:Project:form.html.twig' with { ' form' : form, 'project' : project } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts 
+        'bundles/puzzleadmin/js/plugins/pickers/pickadate/picker.js'
+        'bundles/puzzleadmin/js/plugins/pickers/pickadate/picker.date.js'
+        
+        output = 'compiled/js/admin_expertise_project_editor.min.js'
+    %}
+    	<script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript">
+        $(".pickadate").pickadate({
+            format: "dd-mm-yyyy"
+        });
+    </script>
+{% endblock %}
+

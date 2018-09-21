@@ -1,0 +1,20 @@
+# Staff
+admin_expertise_staff_list:
+    path:     /list
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Staff:list' }
+
+admin_expertise_staff_create:
+    path:     /create
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Staff:create' }
+
+admin_expertise_staff_show:
+    path:     /{id}
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Staff:show' }
+
+admin_expertise_staff_update:
+    path:     /{id}/update
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Staff:update' }
+    
+admin_expertise_staff_delete:
+    path:     /{id}/delete
+    defaults: { _controller: 'PuzzleAdminExpertiseBundle:Staff:delete' }
