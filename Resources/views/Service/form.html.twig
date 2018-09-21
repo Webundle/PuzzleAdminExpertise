@@ -6,8 +6,8 @@
         <div class="panel panel-flat">
             <div class="panel-body">
                 <div class="form-group">
-                    {{ form_label(form.title) }}
-                    {{ form_widget(form.title) }}
+                    {{ form_label(form.name) }}
+                    {{ form_widget(form.name) }}
                 </div>
                 <div class="form-group">
                     {{ form_widget(form.description) }}
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label>{{ "expertise.label.service.picture"|trans }}</label>
+            <label>{{ "expertise.service.picture"|trans }}</label>
             {% if service is defined and service.picture is not empty %}
                 {% include 'PuzzleAdminMediaBundle:File:embbed.html.twig' with { 'type' : 'image', 'previews' : render_api_media_file(service.picture) } %}
             {% else %}
@@ -41,7 +41,7 @@
 <div class="text-center">
     <a class="btn btn-default" href="{{ url('admin_expertise_service_list') }}">
         <i class="icon-arrow-left8"></i>
-        {{ 'button.cancel'|trans }}
+        {{ 'button.back'|trans }}
     </a>
     <button class="btn btn-success">
         {{ service is defined ? 'button.update'|trans : 'button.add'|trans }}

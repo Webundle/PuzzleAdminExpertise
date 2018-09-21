@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use Puzzle\ConnectBundle\ApiEvents;
 use Puzzle\ConnectBundle\Event\ApiResponseEvent;
 use Puzzle\ConnectBundle\Service\PuzzleApiObjectManager;
+use Puzzle\ConnectBundle\Service\ErrorFactory;
 
 /**
  * 
@@ -67,9 +68,9 @@ class StaffController extends Controller
         $services = [];
         
         try {
-            $items = $apiClient->pull('/expertise/services', ['fields' => 'title,id']);
+            $items = $apiClient->pull('/expertise/services', ['fields' => 'name,id']);
             foreach ($items as $item) {
-                $services[$item['title']] = $item['id'];
+                $services[$item['name']] = $item['id'];
             }
         }catch (BadResponseException $e) {
             /** @var EventDispatcher $dispatcher */
@@ -115,13 +116,9 @@ class StaffController extends Controller
             }catch (BadResponseException $e) {
                 /** @var EventDispatcher $dispatcher */
                 $dispatcher = $this->get('event_dispatcher');
-                $event = $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+                $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
                 
-                if ($request->isXmlHttpRequest() === true) {
-                    return $event->getResponse();
-                }
-                
-                return $this->redirectToRoute('admin_expertise_staff_list');
+                $form = ErrorFactory::createFormError($form, $e);
             }
         }
         
@@ -203,12 +200,27 @@ class StaffController extends Controller
             
             $postData = $form->getData();
             $postData['picture'] = $uploads && count($uploads) > 0 ? $uploads[0] : $postData['file-url'] ?? null;
+            $postData = PuzzleApiObjectManager::sanitize($postData);
             
-            /** @var Puzzle\ConnectBundle\Service\PuzzleAPIClient $apiClient */
-            $apiClient = $this->get('puzzle_connect.api_client');
-            $apiClient->push('put', '/expertise/staffs/'.$staff['id'], $postData);
-            
-            return $this->redirectToRoute('admin_expertise_staff_list');
+            try {
+                /** @var Puzzle\ConnectBundle\Service\PuzzleAPIClient $apiClient */
+                $apiClient = $this->get('puzzle_connect.api_client');
+                $staff = $apiClient->push('put', '/expertise/staffs/'.$id, $postData);
+                
+                if ($request->isXmlHttpRequest() === true) {
+                    return new JsonResponse(true);
+                }
+                
+                $this->addFlash('success', $this->get('translator')->trans('message.put', [], 'success'));
+                
+                return $this->redirectToRoute('admin_expertise_staff_update', array('id' => $staff['id']));
+            }catch (BadResponseException $e) {
+                /** @var EventDispatcher $dispatcher */
+                $dispatcher = $this->get('event_dispatcher');
+                $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+                
+                $form = ErrorFactory::createFormError($form, $e);
+            }
         }
         
         return $this->render("PuzzleAdminExpertiseBundle:Staff:update.html.twig", [

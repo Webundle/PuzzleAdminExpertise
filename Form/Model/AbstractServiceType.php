@@ -19,29 +19,29 @@ class AbstractServiceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
-            ->add('title', TextType::class, [
+            ->add('name', TextType::class, [
                 'translation_domain' => 'admin',
-                'label' => 'expertise.label.service.title',
+                'label' => 'expertise.service.name',
                 'label_attr' => ['class' => 'form-label'],
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('parent', HiddenType::class)
             ->add('description', TextareaType::class, [
                 'translation_domain' => 'admin',
-                'label' => 'expertise.label.service.description',
+                'label' => 'expertise.service.description',
                 'label_attr' => ['class' => 'form-label'],
                 'attr' => ['class' => 'form-control summernote']
             ])
             ->add('classIcon', TextType::class, [
                 'translation_domain' => 'admin',
-                'label' => 'expertise.label.service.classIcon',
+                'label' => 'expertise.service.classIcon',
                 'label_attr' => ['class' => 'form-label'],
                 'attr' => ['class' => 'form-control'],
                 'required' => false
             ])
             ->add('ranking', IntegerType::class, [
                 'translation_domain' => 'admin',
-                'label' => 'expertise.label.service.ranking',
+                'label' => 'expertise.service.ranking',
                 'label_attr' => ['class' => 'form-label'],
                 'attr' => ['class' => 'form-control'],
                 'required' => false

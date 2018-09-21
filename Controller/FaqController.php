@@ -13,6 +13,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use Puzzle\ConnectBundle\ApiEvents;
 use Puzzle\ConnectBundle\Event\ApiResponseEvent;
 use Puzzle\ConnectBundle\Service\PuzzleApiObjectManager;
+use Puzzle\ConnectBundle\Service\ErrorFactory;
 
 /**
  * 
@@ -87,13 +88,9 @@ class FaqController extends Controller
             }catch (BadResponseException $e) {
                 /** @var EventDispatcher $dispatcher */
                 $dispatcher = $this->get('event_dispatcher');
-                $event = $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+                $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
                 
-                if ($request->isXmlHttpRequest() === true) {
-                    return $event->getResponse();
-                }
-                
-                return $this->redirectToRoute('admin_expertise_faq_list');
+                $form = ErrorFactory::createFormError($form, $e);
             }
         }
         
@@ -176,13 +173,9 @@ class FaqController extends Controller
             }catch (BadResponseException $e) {
                 /** @var EventDispatcher $dispatcher */
                 $dispatcher = $this->get('event_dispatcher');
-                $event = $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+                $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
                 
-                if ($request->isXmlHttpRequest() === true) {
-                    return $event->getResponse();
-                }
-                
-                return $this->redirectToRoute('admin_expertise_faq_list');
+                $form = ErrorFactory::createFormError($form, $e);
             }
         }
         

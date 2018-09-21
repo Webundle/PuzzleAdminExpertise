@@ -7,6 +7,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Puzzle\Admin\ExpertiseBundle\Form\Type\ServiceCreateType;
 use Puzzle\Admin\ExpertiseBundle\Form\Type\ServiceUpdateType;
+use GuzzleHttp\Exception\BadResponseException;
+use Puzzle\ConnectBundle\ApiEvents;
+use Puzzle\ConnectBundle\Event\ApiResponseEvent;
+use Puzzle\ConnectBundle\Service\PuzzleApiObjectManager;
+use Puzzle\ConnectBundle\Service\ErrorFactory;
 
 /**
  * 
@@ -15,6 +20,15 @@ use Puzzle\Admin\ExpertiseBundle\Form\Type\ServiceUpdateType;
  */
 class ServiceController extends Controller
 {
+    /**
+     * @var array $fields
+     */
+    private $fields;
+    
+    public function __construct() {
+        $this->fields = ['name', 'parent', 'description', 'classIcon', 'ranking'];
+    }
+    
 	/***
 	 * List services
 	 * 
@@ -22,21 +36,28 @@ class ServiceController extends Controller
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 * @Security("has_role('ROLE_EXPERTISE') or has_role('ROLE_ADMIN')")
 	 */
-    public function listAction(Request $request, $current = "NULL"){
-		$criteria = [];
-		$criteria['filter'] = 'parent=='.$current;
-		
-		/** @var Puzzle\Admin\AdminBundle\Service\PuzzleAPIClient $apiClient */
-		$apiClient = $this->get('puzzle.api_client');
-		
-		$services = $apiClient->pull('/expertise/services', $criteria);
-		$currentService = $current != "NULL" ? $apiClient->pull('/expertise/services/'.$current) : null;
-		
-		if ($currentService && isset($currentService['_embedded']) && isset($currentService['_embedded']['parent'])) {
-		    $parent = $currentService['_embedded']['parent'];
-		}else {
-		    $parent = null;
-		}
+    public function listAction(Request $request, $current = "NULL") {
+        try {
+            $criteria = [];
+            $criteria['filter'] = 'parent=='.$current;
+            
+            /** @var Puzzle\ConnectBundle\Service\PuzzleAPIClient $apiClient */
+            $apiClient = $this->get('puzzle_connect.api_client');
+            
+            $services = $apiClient->pull('/expertise/services', $criteria);
+            $currentService = $current != "NULL" ? $apiClient->pull('/expertise/services/'.$current) : null;
+            
+            if ($currentService && isset($currentService['_embedded']) && isset($currentService['_embedded']['parent'])) {
+                $parent = $currentService['_embedded']['parent'];
+            }else {
+                $parent = null;
+            }
+        }catch (BadResponseException $e) {
+            /** @var EventDispatcher $dispatcher */
+            $dispatcher = $this->get('event_dispatcher');
+            $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+            $services = $parent = $currentService = [];
+        }
 		
 		return $this->render("PuzzleAdminExpertiseBundle:Service:list.html.twig",[
 		    'services'      => $services,
@@ -54,13 +75,7 @@ class ServiceController extends Controller
      */
     public function createAction(Request $request) {
         $parentId = $request->query->get('parent');
-        $data = [
-            'title'  => '', 
-            'parent' => $parentId, 
-            'description' => '',
-            'classIcon' => '',
-            'ranking' => 1
-        ];
+        $data = PuzzleApiObjectManager::hydratate($this->fields, ['ranking' => 1]);
         
         $form = $this->createForm(ServiceCreateType::class, $data, [
             'method' => 'POST',
@@ -76,16 +91,30 @@ class ServiceController extends Controller
             
             $postData = $form->getData();
             $postData['picture'] = $uploads && count($uploads) > 0 ? $uploads[0] : $postData['file-url'] ?? null;
+            $postData = PuzzleApiObjectManager::sanitize($postData);
             
-            /** @var Puzzle\Admin\AdminBundle\Service\PuzzleAPIClient $apiClient */
-            $apiClient = $this->get('puzzle.api_client');
-            $apiClient->push('post', '/expertise/services', $postData);
-            
-            if ($parentId !== null) {
-                return $this->redirectToRoute('admin_expertise_service_show', array('id' => $parentId));
+            try {
+                $postData = $form->getData();
+                $postData = PuzzleApiObjectManager::sanitize($postData);
+                
+                /** @var Puzzle\ConnectBundle\Service\PuzzleAPIClient $apiClient */
+                $apiClient = $this->get('puzzle_connect.api_client');
+                $project = $apiClient->push('post', '/expertise/services', $postData);
+                
+                if ($request->isXmlHttpRequest() === true) {
+                    return new JsonResponse(true);
+                }
+                
+                $this->addFlash('success', $this->get('translator')->trans('message.post', [], 'success'));
+                
+                return $this->redirectToRoute('admin_expertise_service_update', array('id' => $project['id']));
+            }catch (BadResponseException $e) {
+                /** @var EventDispatcher $dispatcher */
+                $dispatcher = $this->get('event_dispatcher');
+                $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+                
+                $form = ErrorFactory::createFormError($form, $e);
             }
-            
-            return $this->redirectToRoute('admin_expertise_service_list');
         }
         
         return $this->render("PuzzleAdminExpertiseBundle:Service:create.html.twig", ['form' => $form->createView()]);
@@ -99,14 +128,21 @@ class ServiceController extends Controller
      * @Security("has_role('ROLE_EXPERTISE') or has_role('ROLE_ADMIN')")
      */
     public function showAction(Request $request, $id) {
-        /** @var Puzzle\Admin\AdminBundle\Service\PuzzleAPIClient $apiClient */
-        $apiClient = $this->get('puzzle.api_client');
-        $service = $apiClient->pull('/expertise/services/'.$id);
-        $childs = $apiClient->pull('/expertise/services/'.['filter' => 'parent=='. $id]);
-        
-        $parent = null;
-        if (isset($service['_embedded'])) {
-            $parent = $service['_embedded']['parent'] ?? null;
+        try {
+            /** @var Puzzle\ConnectBundle\Service\PuzzleAPIClient $apiClient */
+            $apiClient = $this->get('puzzle_connect.api_client');
+            $service = $apiClient->pull('/expertise/services/'.$id);
+            $childs = $apiClient->pull('/expertise/services/'.['filter' => 'parent=='. $id]);
+            
+            $parent = null;
+            if (isset($service['_embedded'])) {
+                $parent = $service['_embedded']['parent'] ?? null;
+            }
+        }catch (BadResponseException $e) {
+            /** @var EventDispatcher $dispatcher */
+            $dispatcher = $this->get('event_dispatcher');
+            $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+            $service = $parent = $childs = [];
         }
         
         return $this->render("PuzzleAdminExpertiseBundle:Service:show.html.twig", array(
@@ -124,8 +160,8 @@ class ServiceController extends Controller
      * @Security("has_role('ROLE_EXPERTISE') or has_role('ROLE_ADMIN')")
      */
     public function updateAction(Request $request, $id) {
-        /** @var Puzzle\Admin\AdminBundle\Service\PuzzleAPIClient $apiClient */
-        $apiClient = $this->get('puzzle.api_client');
+        /** @var Puzzle\ConnectBundle\Service\PuzzleAPIClient $apiClient */
+        $apiClient = $this->get('puzzle_connect.api_client');
         $service = $apiClient->pull('/expertise/services/'.$id);
         
         $parentId = $service['_embedded']['parent']['id'] ?? null;
@@ -150,16 +186,30 @@ class ServiceController extends Controller
             
             $postData = $form->getData();
             $postData['picture'] = $uploads && count($uploads) > 0 ? $uploads[0] : $postData['file-url'] ?? null;
+            $postData = PuzzleApiObjectManager::sanitize($postData);
             
-            /** @var Puzzle\Admin\AdminBundle\Service\PuzzleAPIClient $apiClient */
-            $apiClient = $this->get('puzzle.api_client');
-            $apiClient->push('put', '/expertise/services/'.$service['id'], $postData);
-            
-            if ($parentId !== null) {
-                return $this->redirectToRoute('admin_expertise_service_show', array('id' => $parentId));
+            try {
+                $postData = $form->getData();
+                $postData = PuzzleApiObjectManager::sanitize($postData);
+                
+                /** @var Puzzle\ConnectBundle\Service\PuzzleAPIClient $apiClient */
+                $apiClient = $this->get('puzzle_connect.api_client');
+                $apiClient->push('put', '/expertise/services/'.$id, $postData);
+                
+                if ($request->isXmlHttpRequest() === true) {
+                    return new JsonResponse(true);
+                }
+                
+                $this->addFlash('success', $this->get('translator')->trans('message.put', [], 'success'));
+                
+                return $this->redirectToRoute('admin_expertise_service_update', array('id' => $id));
+            }catch (BadResponseException $e) {
+                /** @var EventDispatcher $dispatcher */
+                $dispatcher = $this->get('event_dispatcher');
+                $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+                
+                $form = ErrorFactory::createFormError($form, $e);
             }
-            
-            return $this->redirectToRoute('admin_expertise_article_list');
         }
         
         return $this->render("PuzzleAdminExpertiseBundle:Service:update.html.twig", [
@@ -175,23 +225,35 @@ class ServiceController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response
      * @Security("has_role('ROLE_EXPERTISE') or has_role('ROLE_ADMIN')")
      */
-    public function deleteAction(Request $request, $id){
-        /** @var Puzzle\Admin\AdminBundle\Service\PuzzleAPIClient $apiClient */
-        $apiClient = $this->get('puzzle.api_client');
-        $service = $apiClient->pull('/expertise/services/'.$id);
-        $parentId = $service['_embedded']['parent']['id'] ?? null;
-        
-        if ($parentId){
-            $route = $this->redirectToRoute('admin_expertise_service_show', array('id' => $parentId));
-    	}else{
-    		$route = $this->redirectToRoute('admin_expertise_service_list');
-    	}
-    	
-    	$response = $apiClient->push('delete', '/expertise/services/'.$id);
-    	if ($request->isXmlHttpRequest()) {
-    	    return new JsonResponse($response);
-    	}
-    	
-    	return $route;
+    public function deleteAction(Request $request, $id) {
+        try {
+            /** @var Puzzle\ConnectBundle\Service\PuzzleAPIClient $apiClient */
+            $apiClient = $this->get('puzzle_connect.api_client');
+            $response = $apiClient->push('delete', '/expertise/services/'.$id);
+            
+            if ($parentId = $request->query->get('parent')) {
+                $route = $this->redirectToRoute('admin_expertise_service_show', array('id' => $parentId));
+        	}else{
+        		$route = $this->redirectToRoute('admin_expertise_service_list');
+        	}
+        	
+        	if ($request->isXmlHttpRequest()) {
+        	    return new JsonResponse($response);
+        	}
+        	
+        	$this->addFlash('success', $this->get('translator')->trans('message.delete', [], 'success'));
+        	
+        	return $route;
+        }catch (BadResponseException $e) {
+            /** @var EventDispatcher $dispatcher */
+            $dispatcher = $this->get('event_dispatcher');
+            $event  = $dispatcher->dispatch(ApiEvents::API_BAD_RESPONSE, new ApiResponseEvent($e, $request));
+            
+            if ($request->isXmlHttpRequest()) {
+                return $event->getResponse();
+            }
+            
+            return $this->redirectToRoute('admin_expertise_project_list');
+        }
     }
 }
