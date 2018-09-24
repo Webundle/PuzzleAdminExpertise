@@ -31,11 +31,10 @@
 		"webundle/puzzle-admin-media" : "^1.0"
 	},
 	"autoload" : {
-		"psr-0" : {
-			"Webundle\\Puzzle\\Admin\\ExpertiseBundle" : ""
+		"psr-4" : {
+			"Puzzle\\Admin\\ExpertiseBundle\\" : ""
 		}
 	},
-	"target-dir" : "Webundle/Puzzle/Admin/ExpertiseBundle",
 	"extra" : {
 		"branch-alias" : {
 			"dev-master" : "1.0-dev"
